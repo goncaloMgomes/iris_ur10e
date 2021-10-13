@@ -19,11 +19,20 @@
 />
 
   <!-- sensor -->
-  <xacro:include filename="$(find ur_e_description)/urdf/astra.urdf.xacro" />
-  <xacro:sensor_astra parent="ee_link" prefix="camera">
-      <origin xyz="0.041311319304504816 -0.06402544453787727 0.044527571211305426"
-              rpy="3.13766148064 -0.00787797070144 0.000110993634886"/>
-  </xacro:sensor_astra>
+
+  <!--xacro:include filename="$(find ur_e_description)/urdf/astra.urdf.xacro" />
+  <xacro:sensor_astra parent="world" prefix="camera">
+
+      <origin xyz="1.2 0 1" rpy="${0} ${pi - 2*pi/5} ${0}"/>			<!- - Vista normal - ->
+      <!- -origin xyz="1 0.6 1" rpy="${0} ${pi - 2*pi/5} ${pi/2}"/- -> 	<!- - Vista lateral - ->
+	  <!- -origin xyz="1.2 0 1" rpy="${0} ${pi - 3*pi/5} ${pi}"/- ->		<!- - Vista invertida - ->
+	  <!- -origin xyz="0.92 0.1 1" rpy="${0} ${pi/2} ${0}"/- ->					<!- - Vista diretamente de cima - ->
+  </xacro:sensor_astra-->
+
+  <xacro:include filename="$(find ur_e_description)/urdf/aruco/aruco_582.urdf.xacro" />
+  <xacro:aruco parent="ee_link" prefix="aruco">
+  	<origin xyz="0.032 0 -0.034" rpy="${0} ${0} ${0}"/>
+</xacro:aruco>
 
   <link name="world" />
 
@@ -32,5 +41,4 @@
     <child link = "base_link" />
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </joint>
-
 </robot>

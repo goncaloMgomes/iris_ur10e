@@ -14,13 +14,28 @@
       <timeout>5</timeout>
       <powerStateTopic>power_state</powerStateTopic>
       <powerStateRate>10.0</powerStateRate>
-      <fullChargeCapacity>87.78</fullChargeCapacity>     
+      <fullChargeCapacity>87.78</fullChargeCapacity>
       <dischargeRate>-474</dischargeRate>
       <chargeRate>525</chargeRate>
       <dischargeVoltage>15.52</dischargeVoltage>
       <chargeVoltage>16.41</chargeVoltage>
     </plugin>
 -->
+	<plugin name="gazebo_grasp_fix" filename="/home/nacl/catkin_ws/devel/lib/libgazebo_grasp_fix.so">
+		<arm>
+			<arm_name>ur10eRobot</arm_name>
+			<palm_link>wrist_3_link</palm_link>
+			<gripper_link>left_finger_link</gripper_link>
+			<gripper_link>right_finger_link</gripper_link>
+		</arm>
+		<forces_angle_tolerance>100</forces_angle_tolerance>
+		<update_rate>50</update_rate>
+		<grip_count_threshold>4</grip_count_threshold>
+		<max_grip_count>8</max_grip_count>
+		<release_tolerance>0.002</release_tolerance>
+		<disable_collisions_on_attach>false</disable_collisions_on_attach>
+		<contact_topic>__default_topic__</contact_topic>
+	</plugin>
   </gazebo>
 
 </robot>

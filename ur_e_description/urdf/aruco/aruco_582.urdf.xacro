@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="aruco" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find ur_e_description)/urdf/ur.gazebo.xacro" />
+
+  <!-- Parameterised in part by the values in turtlebot_properties.urdf.xacro -->
+  <xacro:macro name="aruco" params="parent prefix *origin">
+
+    <joint name="${prefix}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${prefix}_link"/>
+    </joint>
+
+	<link name="${prefix}_link">
+	  <inertial>
+		<origin xyz="0 0 0" />
+		<mass value="0.1" />
+		<inertia  ixx="0.000851" ixy="0.0"  ixz="0.0"  iyy="0.000851"  iyz="0.0"  izz="0.001038" />
+	  </inertial>
+	  <visual>
+		<origin xyz="0 0 0"/>
+		<geometry>
+		  <!--box size="0.05 0.05 0.005" /-->
+		  <mesh filename="package://ur_e_description/meshes/objects/aruco-border-582.dae" scale="1 1 1"/>
+		</geometry>
+	  </visual>
+	  <collision>
+		<origin xyz="0 0 0"/>
+		<geometry>
+		  <box size="0.06 0.06 0.0005" />
+		</geometry>
+	  </collision>
+	</link>
+
+
+  </xacro:macro>
+</robot>

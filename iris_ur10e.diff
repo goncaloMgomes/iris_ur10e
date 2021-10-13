@@ -1,0 +1,415 @@
+diff --git a/iris_ur10e/launch/sim.launch b/iris_ur10e/launch/sim.launch
+index 01f77c3..e2f6b33 100644
+--- a/iris_ur10e/launch/sim.launch
++++ b/iris_ur10e/launch/sim.launch
+@@ -2,6 +2,7 @@
+ <launch>
+ 
+     <arg name="gui" default="false" doc="Starts gazebo gui" />
++    <arg name="world"    default="worlds/empty.world" doc="Starts gazebo with a given world"/>
+ 
+     <arg name="moveit" default="true" doc="Use MoveIt for motion planning"/>
+     <arg name="rviz"   default="true" doc="Launch RViz with movit planner plugin"/>
+@@ -11,6 +12,7 @@
+     <include file="$(find iris_ur10e)/launch/ur10e.launch">
+         <arg name="sim"     value="true"/>
+         <arg name="gui"     value="$(arg gui)"/>
++        <arg name="world"     value="$(arg world)"/>
+         <arg name="moveit"  value="$(arg moveit)"/>
+         <arg name="rviz"    value="$(arg rviz)"/>
+         <arg name="limited" value="$(arg limited)"/>
+diff --git a/iris_ur10e/launch/ur10e.launch b/iris_ur10e/launch/ur10e.launch
+index 3c4ad97..126513e 100644
+--- a/iris_ur10e/launch/ur10e.launch
++++ b/iris_ur10e/launch/ur10e.launch
+@@ -3,6 +3,7 @@
+ 
+     <arg name="sim" default="false" doc="Launch a simulated environment for the ur10e"/>
+     <arg name="gui" default="false" doc="Starts gazebo gui" />
++    <arg name="world"    default="worlds/empty.world" doc="Starts gazebo with a given world"/>
+ 
+     <arg name="moveit"  default="true" doc="Use MoveIt for motion planning"/>
+     <arg name="rviz"    default="true" doc="Launch RViz with movit planner plugin"/>
+@@ -17,6 +18,7 @@
+     <include if="$(arg sim)" file="$(find ur_e_gazebo)/launch/ur10e.launch">
+         <arg name="limited" value="$(arg limited)"/>
+         <arg name="gui"     value="$(arg gui)"/>
++        <arg name="world"     value="$(arg world)"/>
+     </include>
+ 
+     <group if="$(arg moveit)">
+diff --git a/ur10_e_moveit_config/launch/moveit.rviz b/ur10_e_moveit_config/launch/moveit.rviz
+index 7e23083..07f0a65 100644
+--- a/ur10_e_moveit_config/launch/moveit.rviz
++++ b/ur10_e_moveit_config/launch/moveit.rviz
+@@ -1,14 +1,11 @@
+ Panels:
+   - Class: rviz/Displays
+-    Help Height: 75
++    Help Height: 70
+     Name: Displays
+     Property Tree Widget:
+-      Expanded:
+-        - /Global Options1
+-        - /MotionPlanning1
+-        - /MotionPlanning1/Planning Request1
++      Expanded: ~
+       Splitter Ratio: 0.5
+-    Tree Height: 290
++    Tree Height: 334
+   - Class: rviz/Selection
+     Name: Selection
+   - Class: rviz/Tool Properties
+@@ -27,7 +24,7 @@ Panels:
+     Experimental: false
+     Name: Time
+     SyncMode: 0
+-    SyncSource: ""
++    SyncSource: PointCloud2 Camera Source
+ Preferences:
+   PromptSaveOnExit: true
+ Toolbars:
+@@ -61,7 +58,6 @@ Visualization Manager:
+       MoveIt_Allow_External_Program: false
+       MoveIt_Allow_Replanning: false
+       MoveIt_Allow_Sensor_Positioning: false
+-      MoveIt_Goal_Tolerance: 0
+       MoveIt_Planning_Attempts: 10
+       MoveIt_Planning_Time: 5
+       MoveIt_Use_Cartesian_Path: false
+@@ -96,6 +92,27 @@ Visualization Manager:
+             Show Axes: false
+             Show Trail: false
+             Value: true
++          camera_depth_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_depth_optical_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_link:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++            Value: true
++          camera_rgb_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_rgb_optical_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
+           ee_link:
+             Alpha: 1
+             Show Axes: false
+@@ -182,7 +199,7 @@ Visualization Manager:
+         Show Workspace: false
+         Start State Alpha: 1
+         Start State Color: 0; 255; 0
+-      Planning Scene Topic: move_group/monitored_planning_scene
++      Planning Scene Topic: /move_group/monitored_planning_scene
+       Robot Description: robot_description
+       Scene Geometry:
+         Scene Alpha: 0.8999999761581421
+@@ -208,6 +225,27 @@ Visualization Manager:
+             Show Axes: false
+             Show Trail: false
+             Value: true
++          camera_depth_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_depth_optical_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_link:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++            Value: true
++          camera_rgb_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
++          camera_rgb_optical_frame:
++            Alpha: 1
++            Show Axes: false
++            Show Trail: false
+           ee_link:
+             Alpha: 1
+             Show Axes: false
+@@ -271,11 +309,115 @@ Visualization Manager:
+         Show Robot Visual: true
+       Value: true
+       Velocity_Scaling_Factor: 1
++    - Alpha: 1
++      Autocompute Intensity Bounds: true
++      Autocompute Value Bounds:
++        Max Value: 10
++        Min Value: -10
++        Value: true
++      Axis: Z
++      Channel Name: intensity
++      Class: rviz/PointCloud2
++      Color: 255; 255; 255
++      Color Transformer: RGB8
++      Decay Time: 0
++      Enabled: true
++      Invert Rainbow: false
++      Max Color: 255; 255; 255
++      Max Intensity: 4096
++      Min Color: 0; 0; 0
++      Min Intensity: 0
++      Name: PointCloud2 Camera Source
++      Position Transformer: XYZ
++      Queue Size: 10
++      Selectable: true
++      Size (Pixels): 3
++      Size (m): 0.009999999776482582
++      Style: Points
++      Topic: /camera/depth/points
++      Unreliable: false
++      Use Fixed Frame: true
++      Use rainbow: true
++      Value: true
++    - Alpha: 1
++      Autocompute Intensity Bounds: true
++      Autocompute Value Bounds:
++        Max Value: 0.21999259293079376
++        Min Value: -0.005141562782227993
++        Value: true
++      Axis: Z
++      Channel Name: intensity
++      Class: rviz/PointCloud2
++      Color: 255; 255; 255
++      Color Transformer: Intensity
++      Decay Time: 0
++      Enabled: true
++      Invert Rainbow: false
++      Max Color: 255; 255; 255
++      Max Intensity: 4096
++      Min Color: 0; 0; 0
++      Min Intensity: 0
++      Name: PointCloud2 Objects Filtered
++      Position Transformer: XYZ
++      Queue Size: 10
++      Selectable: true
++      Size (Pixels): 3
++      Size (m): 0.009999999776482582
++      Style: Points
++      Topic: /objects_table
++      Unreliable: false
++      Use Fixed Frame: true
++      Use rainbow: true
++      Value: true
++    - Class: rviz/Axes
++      Enabled: true
++      Length: 0.30000001192092896
++      Name: Axes Base Robot
++      Radius: 0.019999999552965164
++      Reference Frame: base_link
++      Value: true
++    - Class: rviz/Axes
++      Enabled: true
++      Length: 0.30000001192092896
++      Name: Axes Table
++      Radius: 0.019999999552965164
++      Reference Frame: table_plane
++      Value: true
++    - Alpha: 1
++      Autocompute Intensity Bounds: true
++      Autocompute Value Bounds:
++        Max Value: 10
++        Min Value: -10
++        Value: true
++      Axis: Z
++      Channel Name: intensity
++      Class: rviz/PointCloud2
++      Color: 255; 255; 255
++      Color Transformer: RGB8
++      Decay Time: 0
++      Enabled: true
++      Invert Rainbow: false
++      Max Color: 255; 255; 255
++      Max Intensity: 4096
++      Min Color: 0; 0; 0
++      Min Intensity: 0
++      Name: PointCloud2 Clusters Centroids
++      Position Transformer: XYZ
++      Queue Size: 10
++      Selectable: true
++      Size (Pixels): 3
++      Size (m): 0.004999999888241291
++      Style: Spheres
++      Topic: /objects_clustered
++      Unreliable: false
++      Use Fixed Frame: true
++      Use rainbow: true
++      Value: true
+   Enabled: true
+   Global Options:
+     Background Color: 48; 48; 48
+     Default Light: true
+-    Fixed Frame: base
++    Fixed Frame: base_link
+     Frame Rate: 30
+   Name: root
+   Tools:
+@@ -299,37 +441,37 @@ Visualization Manager:
+   Views:
+     Current:
+       Class: rviz/Orbit
+-      Distance: 0.9199109077453613
++      Distance: 1.500003457069397
+       Enable Stereo Rendering:
+         Stereo Eye Separation: 0.05999999865889549
+         Stereo Focal Distance: 1
+         Swap Stereo Eyes: false
+         Value: false
+       Focal Point:
+-        X: -1.0121444463729858
+-        Y: -0.299192875623703
+-        Z: 0.04778817296028137
++        X: 0.772977352142334
++        Y: 0.06620826572179794
++        Z: 0.22991503775119781
+       Focal Shape Fixed Size: true
+       Focal Shape Size: 0.05000000074505806
+       Invert Z Axis: false
+       Name: Current View
+       Near Clip Distance: 0.009999999776482582
+-      Pitch: 0.6897967457771301
++      Pitch: 0.29979634284973145
+       Target Frame: <Fixed Frame>
+       Value: Orbit (rviz)
+-      Yaw: 3.9435923099517822
++      Yaw: 5.489230632781982
+     Saved: ~
+ Window Geometry:
+   Displays:
+     collapsed: false
+-  Height: 1043
++  Height: 1025
+   Hide Left Dock: false
+   Hide Right Dock: true
+   MotionPlanning:
+     collapsed: false
+   MotionPlanning - Trajectory Slider:
+     collapsed: false
+-  QMainWindow State: 000000ff00000000fd000000040000000000000295000003b9fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730200000780000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000001aa000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006701000001fc000001cb0000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006701000001ed000002090000019b00ffffff000000010000010f000002affc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000002af000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003efc0100000002fb0000000800540069006d00650000000000000004b0000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000004e5000003b900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
++  QMainWindow State: 000000ff00000000fd000000040000000000000295000003a7fc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000005fb000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000001d1000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006701000001fc000001cb0000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720100000214000000410000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000025b000001890000017d00fffffffb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067000000029b000001940000000000000000000000010000010f000002affc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000002af000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003efc0100000002fb0000000800540069006d00650000000000000004b0000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000004a2000003a700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+   Selection:
+     collapsed: false
+   Time:
+@@ -338,6 +480,6 @@ Window Geometry:
+     collapsed: false
+   Views:
+     collapsed: true
+-  Width: 1920
+-  X: 0
+-  Y: 576
++  Width: 1853
++  X: 67
++  Y: 27
+diff --git a/ur_e_description/urdf/common.gazebo.xacro b/ur_e_description/urdf/common.gazebo.xacro
+index f800be8..6234503 100644
+--- a/ur_e_description/urdf/common.gazebo.xacro
++++ b/ur_e_description/urdf/common.gazebo.xacro
+@@ -14,13 +14,28 @@
+       <timeout>5</timeout>
+       <powerStateTopic>power_state</powerStateTopic>
+       <powerStateRate>10.0</powerStateRate>
+-      <fullChargeCapacity>87.78</fullChargeCapacity>     
++      <fullChargeCapacity>87.78</fullChargeCapacity>
+       <dischargeRate>-474</dischargeRate>
+       <chargeRate>525</chargeRate>
+       <dischargeVoltage>15.52</dischargeVoltage>
+       <chargeVoltage>16.41</chargeVoltage>
+     </plugin>
+ -->
++	<plugin name="gazebo_grasp_fix" filename="/home/nacl/catkin_ws/devel/lib/libgazebo_grasp_fix.so">
++		<arm>
++			<arm_name>ur10eRobot</arm_name>
++			<palm_link>wrist_3_link</palm_link>
++			<gripper_link>left_finger_link</gripper_link>
++			<gripper_link>right_finger_link</gripper_link>
++		</arm>
++		<forces_angle_tolerance>100</forces_angle_tolerance>
++		<update_rate>50</update_rate>
++		<grip_count_threshold>4</grip_count_threshold>
++		<max_grip_count>8</max_grip_count>
++		<release_tolerance>0.002</release_tolerance>
++		<disable_collisions_on_attach>false</disable_collisions_on_attach>
++		<contact_topic>__default_topic__</contact_topic>
++	</plugin>
+   </gazebo>
+ 
+ </robot>
+diff --git a/ur_e_description/urdf/ur.gazebo.xacro b/ur_e_description/urdf/ur.gazebo.xacro
+index 0356dee..e49f460 100644
+--- a/ur_e_description/urdf/ur.gazebo.xacro
++++ b/ur_e_description/urdf/ur.gazebo.xacro
+@@ -37,7 +37,7 @@
+   </xacro:macro>
+ 
+   <xacro:macro name="sim_3dsensor" params="prefix">
+-      <gazebo reference="${prefix}_rgb_frame">
++      <gazebo reference="${prefix}_depth_frame">
+           <sensor type="depth" name="camera">
+               <always_on>true</always_on>
+               <update_rate>20.0</update_rate>
+diff --git a/ur_e_description/urdf/ur10e_joint_limited_robot.urdf.xacro b/ur_e_description/urdf/ur10e_joint_limited_robot.urdf.xacro
+index 36e0f77..4871b1b 100644
+--- a/ur_e_description/urdf/ur10e_joint_limited_robot.urdf.xacro
++++ b/ur_e_description/urdf/ur10e_joint_limited_robot.urdf.xacro
+@@ -20,9 +20,8 @@
+ 
+   <!-- sensor -->
+   <xacro:include filename="$(find ur_e_description)/urdf/astra.urdf.xacro" />
+-  <xacro:sensor_astra parent="ee_link" prefix="camera">
+-      <origin xyz="0.041311319304504816 -0.06402544453787727 0.044527571211305426"
+-              rpy="3.13766148064 -0.00787797070144 0.000110993634886"/>
++  <xacro:sensor_astra parent="world" prefix="camera">
++      <origin xyz="1.2 0 1" rpy="${0} ${pi - 2*pi/5} ${0}"/>
+   </xacro:sensor_astra>
+ 
+   <link name="world" />
+@@ -32,5 +31,4 @@
+     <child link = "base_link" />
+     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+   </joint>
+-
+ </robot>
+diff --git a/ur_e_gazebo/launch/ur10e.launch b/ur_e_gazebo/launch/ur10e.launch
+index 6d52255..7ccc0ae 100644
+--- a/ur_e_gazebo/launch/ur10e.launch
++++ b/ur_e_gazebo/launch/ur10e.launch
+@@ -3,12 +3,13 @@
+   <arg name="limited" default="false"  doc="If true, limits joint range [-PI, PI] on all joints." />
+   <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
+   <arg name="gui" default="true" doc="Starts gazebo gui" />
+-
++  <arg name="world" default="worlds/empty.world" doc="Starts gazebo with a given world" />
+   <!-- startup simulated world -->
+   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+-    <arg name="world_name" default="worlds/empty.world"/>
++    <arg name="world_name" value = "$(arg world)"/>
+     <arg name="paused" value="$(arg paused)"/>
+     <arg name="gui" value="$(arg gui)"/>
++	<arg name="verbose" value="true" />
+   </include>
+ 
+   <!-- send robot urdf to param server -->
+@@ -17,7 +18,7 @@
+   </include>
+ 
+   <!-- push robot_description to factory and spawn robot in gazebo -->
+-  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.1" respawn="false" output="screen" />
++  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 1.025" respawn="false" output="screen" />
+ 
+   <include file="$(find ur_e_gazebo)/launch/controller_utils.launch"/>
+ 
